@@ -1,9 +1,9 @@
 import React from 'react';
 import flagsmith from 'flagsmith';
 
-export default function () {
+function Flagsmith () {
 
-    const [hasFlags, setHasFlags] = React.useState(false);
+    // const [hasFlags, setHasFlags] = React.useState(false);
     const [initDone, setInitDone] = React.useState(false);
 
     React.useEffect(() => {
