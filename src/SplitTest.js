@@ -6,41 +6,43 @@ import { SplitFactory } from '@splitsoftware/splitio';
 const SplitTest = ({ event }) => {
 
   const [splitClient, setSplitClient] = React.useState(null);
-  const [accountFeatureEnabled, setAccountFeatureEnabled] = React.useState(false);
+  const [eventFeatureEnabled, setEventFeatureEnabled] = React.useState(false);
 
-    React.useEffect(() => {
-        const factory = SplitFactory({ 
-          core: {
-            authorizationKey: 'in9qidn1upmnq6bi8ffums1tm5lakagp8jn0',
-            key: event
-          },
-          startup: {
-            readyTimeout: 1.5
-          }
-        });
-        
-        const client = factory.client();
+  React.useEffect(() => {
+    const factory = SplitFactory({ 
+      core: {
+        authorizationKey: 'in9qidn1upmnq6bi8ffums1tm5lakagp8jn0',
+        key: event,
+        trafficType: 'event'
+      },
+      startup: {
+        readyTimeout: 1.5
+      }
+    });
     
-        client.on(client.Event.SDK_READY, () => {
-          setSplitClient(client);
-        });
-      }, [event]);
-    
-      React.useEffect(() => {
-        const userObject = {
-          account: '123456',
-          email: 'gilad@bizzabo.com',
-          event: '456'
-        };
-    
-        setAccountFeatureEnabled(splitClient && splitClient.getTreatment('accountFeature', userObject));
-    
-      }, [splitClient]);
+    const client = factory.client();
+
+    client.on(client.Event.SDK_READY, () => {
+      setSplitClient(client);
+    });
+  }, [event]);
+
+  React.useEffect(() => {
+    const userObject = {
+      account: `${event}000`,
+      email: `${event}@bizzabo.com`,
+      event: event
+    };
+
+    const isFeatureOn = splitClient && splitClient.getTreatment('eventFeature', userObject);
+    setEventFeatureEnabled(isFeatureOn === 'on');
+
+  }, [event, splitClient]);
 
   return <div style={{ border: '1px solid black', margin: '50px' }}>
     <h1>This is from Split.io</h1>
     <div>
-      accountFeature is: <strong> { accountFeatureEnabled ? 'on' : 'off' } </strong>  for event: { event }
+    eventFeature is: <strong> { eventFeatureEnabled ? 'on' : 'off' } </strong>  for event: { event }
     </div>
   </div>;
 };
